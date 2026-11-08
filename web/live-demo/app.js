@@ -155,6 +155,7 @@ form.addEventListener("submit", async (event) => {
   const text = input.value.trim();
   if (!text || busy || !runtime) return;
   appendBubble("user", text, directionFor(text));
+  suggestions.hidden = true;
   input.value = "";
   setInteractionEnabled(false);
   primeSound();

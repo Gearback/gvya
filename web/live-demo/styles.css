@@ -215,6 +215,12 @@ h1 span { color: var(--text); }
   color: var(--muted); font-size: 25px; line-height: 1; cursor: pointer;
 }
 .icon-button:hover { background: var(--surface-2); color: var(--text); }
+.chat-actions { display: flex; align-items: center; gap: 2px; }
+.sound-toggle { display: grid; place-items: center; width: 35px; height: 35px; }
+.sound-toggle svg { width: 17px; height: 17px; }
+.sound-toggle[aria-pressed="false"] .sound-on-icon,
+.sound-toggle[aria-pressed="true"] .sound-off-icon { display: none; }
+.sound-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .messages {
   background: var(--surface);
   overflow-y: auto;

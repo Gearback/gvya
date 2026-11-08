@@ -84,6 +84,8 @@ code {
   gap: 11px;
   width: fit-content;
   font-weight: 720;
+  font-size: 32px;
+  line-height: 1;
   letter-spacing: -.02em;
 }
 .brand-mark, .avatar {
@@ -260,6 +262,7 @@ h1 span { color: var(--text); }
   background: var(--surface);
   scrollbar-width: none;
 }
+.suggestions[hidden] { display: none; }
 .suggestions::-webkit-scrollbar { display: none; }
 .suggestions button {
   flex: 0 0 auto;

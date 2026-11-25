@@ -282,7 +282,7 @@ export function App() {
     </aside>
     <main className="main-shell">
       <header className="topbar"><Breadcrumb studio={studio} project={project} bot={bot} route={route} packageContext={packageContext} onRoute={navigate} /></header>
-      {contextKind && <ContextTabs kind={contextKind} route={route} setRoute={navigate} overviewOnly={missingMatcherLanguages.length > 0} packageKind={editingBrain ? selectedPackage(editingBrain).manifest.kind : undefined} />}
+      {contextKind && <ContextTabs kind={contextKind} route={route} setRoute={navigate} overviewOnly={missingMatcherLanguages.length > 0} packageKind={editingBrain ? selectedPackage(editingBrain).manifest.kind : "standard"} />}
       <div className="content-area">
         {route === "projects" && <ProjectsView studio={studio} applyStudio={applyStudio} openProject={openProject} />}
         {route === "packages" && <SharedPackagesView studio={studio} applyStudio={applyStudio} openPackage={(scope, id) => openPackage(scope, id, "global")} />}

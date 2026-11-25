@@ -52,7 +52,7 @@ The sidebar is intentionally fixed and minimal:
 2. **Shared Packages**
 3. **Settings**
 
-Bot concerns and Package authoring are separate contextual surfaces: Bots own Overview/Packages/Simulate/Settings/Build, while Package editors own Behaviors/Capabilities/Assets/Simulate/Audit.
+Bot concerns and Package authoring are separate contextual surfaces: Bots own Overview/Packages/Simulate/Settings/Build, while Package editors own Teach/Behaviors/Capabilities/Assets/Simulate/Audit.
 
 The top bar is navigation, not a workspace toolbar. It contains a clickable hierarchy breadcrumb such as:
 
@@ -149,6 +149,9 @@ A **Standard Package** exposes:
 - Audit
 
 Package Overview offers the explicit dated Package-folder ZIP download. Studio does not create automatic Package backups.
+
+**Teach** is a progressive, chat-first authoring surface for Standard Packages. It previews the selected Package and dependency closure with the same bundled canonical Rust compiler/runtime as Package Simulate. A visible NPC turn may be accepted without a source change, given another localized variant, corrected in the exact selected normal response, or used as evidence to create a new Meaning/Behavior/Response pair with an optional topic. No JavaScript matcher, AI provider, independent runtime, hidden test author, or separate Teach schema is introduced. Teach writes to the selected owning Package only: dependency and fallback results cannot be silently rewritten, conditional/special responses are not guessed, and edits are local drafts until explicit Save. Existing conversations restart when the accepted source changes. Technical context, source identifiers, localized authoring choice, and topic scoping remain behind Advanced; the full Behaviors editor and Package Simulate remain available for precise work. A new semantic sample can still compete with existing evidence, so a newly taught intent is not a guarantee that Rust matching will select it until tested.
+
 
 There is no Package Languages tab and no generic `localizations` contribution namespace. Multilingual conversation authoring lives with the object that owns the text: Meaning structural patterns and semantic samples in Behaviors, response/extra-message text in responses, and utterance language in tests/scenarios. Audit reports sample, response-variant and utterance-step test counts for every Matcher-Profile-defined Project language. Conversation scenarios may also contain non-utterance interaction steps such as open, confirmation and capability-result delivery.
 

@@ -136,7 +136,7 @@ A **Bot** exposes:
 - Build
 - Settings
 
-Bot Overview also offers an explicit `<bot-id>-YYYY-MM-DD.zip` download containing the current Bot folder and its owned Package. Referenced Shared or Project Packages remain declared external dependencies and are not copied into that Bot-folder archive.
+Bot Overview offers a direct **Teach by chatting** action that opens its owned Standard Bot Package Teach tab without requiring a detour through Package management. Bot Overview also offers an explicit `<bot-id>-YYYY-MM-DD.zip` download containing the current Bot folder and its owned Package. Referenced Shared or Project Packages remain declared external dependencies and are not copied into that Bot-folder archive.
 
 A Bot never embeds Package authoring controls into its Overview or Settings surface. The Packages tab is ordered **Bot Package → Added Packages → Fallback Package**. It shows the one non-removable Bot Package, selected Shared/Project Standard Packages with their true owner, then the separate Fallback selector. `Manage Packages` lists only Shared/Project choices whose complete dependency graph is covered by the Project Language/Matcher Profile pairs and atomically applies the ID selection without copying source. Clicking a selected Standard or Fallback Package opens its owning scope; Bot-level Standard Override writes into the Bot Package. Fallback selection has no Override action.
 

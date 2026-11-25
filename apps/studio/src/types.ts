@@ -526,7 +526,7 @@ export interface StudioBrainWorkspace {
   updatedSerial: number;
 }
 
-export type StudioRoute = "projects" | "packages" | "settings" | "project" | "project-packages" | "bot" | "bot-packages" | "package-overview" | "author" | "capabilities" | "source" | "assets" | "package-simulate" | "audit" | "simulate" | "build" | "bot-settings";
+export type StudioRoute = "projects" | "packages" | "settings" | "project" | "project-packages" | "bot" | "bot-packages" | "package-overview" | "teach" | "author" | "capabilities" | "source" | "assets" | "package-simulate" | "audit" | "simulate" | "build" | "bot-settings";
 
 export interface AuditIssue {
   id: string;

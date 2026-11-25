@@ -4,6 +4,7 @@ import { assetFileKey, assetFilesForBrain, botAssetOwner, liveAssetOwnerKeys, pa
 import { loadStudioContent, saveStudioContent } from "./studio-content.js";
 import { downloadSelectedBotFolderZip, downloadSelectedPackageFolderZip } from "./folder-export.js";
 import { BuildView, SimulateView } from "./studio-runtime-views.js";
+import { TeachView } from "./studio-teach-view.js";
 import { CapabilitiesView } from "./studio-capability-views.js";
 import { AuthorView } from "./studio-behavior-views.js";
 import { PackageSourceView } from "./studio-source-view.js";
@@ -24,7 +25,7 @@ import {
 import type {
   AssetDefinition, StudioBrainWorkspace, StudioAssetFile, StudioRoute, StudioWorkspace,
 } from "./types.js";
-import { cloneBrainWorkspace, touch } from "./workspace.js";
+import { cloneBrainWorkspace, selectedPackage, touch } from "./workspace.js";
 
 type ToastKind = "success" | "error" | "info";
 interface ToastNotice { id: number; message: string; kind: ToastKind; }
@@ -92,7 +93,7 @@ export function App() {
     try { return resolveSelectedBrain(studio); } catch { return null; }
   }, [studio]);
   const packagePreview = useMemo<{ workspace: StudioBrainWorkspace | null; error: string }>(() => {
-    if (route !== "package-simulate") return { workspace: null, error: "" };
+    if (route !== "package-simulate" && route !== "teach") return { workspace: null, error: "" };
     try { return { workspace: resolvePackagePreview(studio), error: "" }; }
     catch (error) { return { workspace: null, error: String(error) }; }
   }, [route, studio]);
@@ -266,8 +267,8 @@ export function App() {
     try { navigateWithStudio(selectBotWorkspace(studio, botId), "bot", "bot"); }
     catch (error) { setStatus(String(error)); }
   };
-  const openPackage = (scope: "shared" | "project" | "bot", packageId: string, context: PackageNavigationContext) => {
-    try { navigateWithStudio(selectPackageWorkspace(studio, scope, packageId), "package-overview", context); }
+  const openPackage = (scope: "shared" | "project" | "bot", packageId: string, context: PackageNavigationContext, initialRoute: StudioRoute = "package-overview") => {
+    try { navigateWithStudio(selectPackageWorkspace(studio, scope, packageId), initialRoute, context); }
     catch (error) { setStatus(String(error)); }
   };
   return <div className="app-shell">
@@ -281,15 +282,17 @@ export function App() {
     </aside>
     <main className="main-shell">
       <header className="topbar"><Breadcrumb studio={studio} project={project} bot={bot} route={route} packageContext={packageContext} onRoute={navigate} /></header>
-      {contextKind && <ContextTabs kind={contextKind} route={route} setRoute={navigate} overviewOnly={missingMatcherLanguages.length > 0} />}
+      {contextKind && <ContextTabs kind={contextKind} route={route} setRoute={navigate} overviewOnly={missingMatcherLanguages.length > 0} packageKind={editingBrain ? selectedPackage(editingBrain).manifest.kind : "standard"} />}
       <div className="content-area">
         {route === "projects" && <ProjectsView studio={studio} applyStudio={applyStudio} openProject={openProject} />}
         {route === "packages" && <SharedPackagesView studio={studio} applyStudio={applyStudio} openPackage={(scope, id) => openPackage(scope, id, "global")} />}
         {route === "settings" && <GlobalSettingsView studio={studio} applyStudio={applyStudio} />}
         {(route === "project" || route === "project-packages") && project && <ProjectView studio={studio} route={route} onRoute={navigate} applyStudio={applyStudio} openBot={openBot} openPackage={(scope, id) => openPackage(scope, id, "project")} />}
-        {project && bot && route === "bot" && <BotOverviewView studio={studio} applyStudio={applyStudio} onOpenPackages={() => navigate("bot-packages")} onSimulate={() => navigate("simulate")} onDownloadArchive={downloadBotFolder} />}
+        {project && bot && route === "bot" && <BotOverviewView studio={studio} applyStudio={applyStudio} onOpenPackages={() => navigate("bot-packages")} onTeach={() => openPackage("bot", bot.package.manifest.id, "bot", "teach")} onSimulate={() => navigate("simulate")} onDownloadArchive={downloadBotFolder} />}
         {project && bot && route === "bot-packages" && <BotPackagesView studio={studio} applyStudio={applyStudio} openPackage={(scope, id) => openPackage(scope, id, "bot")} />}
         {editingBrain && route === "package-overview" && <PackageOverviewView studio={studio} workspace={editingBrain} issues={issues} missingMatcherLanguages={missingMatcherLanguages} setRoute={navigate} onDownloadArchive={downloadPackageFolder} />}
+        {editingBrain && packagePreview.workspace && route === "teach" && <TeachView editingWorkspace={editingBrain} simulationWorkspace={packagePreview.workspace} assetFiles={packagePreviewAssetFiles} replaceWorkspace={replaceBrain} onOpenBehaviors={() => navigate("author")} onOpenSimulate={() => navigate("package-simulate")} />}
+        {packagePreview.error && route === "teach" && <section className="panel"><h2>Teach unavailable</h2><div className="error-banner">{packagePreview.error}</div></section>}
         {editingBrain && route === "author" && <AuthorView workspace={editingBrain} mutate={mutateBrain} replaceWorkspace={replaceBrain} issues={issues} onTryUtterance={(text) => { setSimulationDraft(text); navigate("package-simulate"); }} />}
         {editingBrain && route === "capabilities" && <CapabilitiesView workspace={editingBrain} mutate={mutateBrain} replaceWorkspace={replaceBrain} issues={issues} />}
         {editingBrain && route === "source" && <PackageSourceView workspace={editingBrain} mutate={mutateBrain} />}

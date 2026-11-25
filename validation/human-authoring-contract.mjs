@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { contribution, createBinding, createCapability, createPackage, createPolicy, createRegressionCase, createScenario, createStarterBrainWorkspace, packageSnapshotDocument } from "../apps/studio/dist/workspace.js";
 import { behaviorDeleteImpacts, capabilityDeleteImpacts, deleteBehaviorPair, deleteCapabilityAtomic, deleteResponseAtomic, groupBehaviorRows, renameBehaviorAtomic, renameCapabilityIdentityAtomic, renameMeaningAtomic, renamePackageAtomic, renameResponseAtomic, responseDeleteImpacts, validateAuthorId, validateAuthorVersion, validatePackageId } from "../apps/studio/dist/human-authoring.js";
 import { createStarterStudioWorkspace } from "../apps/studio/dist/studio-model.js";
+import { teachConversation, teachResponseTarget } from "../apps/studio/dist/studio-teach.js";
 import { studioWorkspaceFromText, studioWorkspaceToText } from "../apps/studio/dist/studio-workspace-io.js";
 
 const base = createStarterBrainWorkspace();
@@ -239,6 +240,52 @@ assert.match(navigationSource, /props\.overviewOnly[\s\S]*\? \[\[props\.kind ===
 console.log("PASS atomic behavior/meaning/response rename with dependency-aware reference rewrites");
 console.log("PASS atomic package/capability identity commits rewrite dependent references and reject unsafe/colliding identity");
 console.log("PASS safe capability deletion cascades local bindings/policies and blocks external dependents");
+
+const teachBase = createStarterBrainWorkspace();
+const teachBehavior = teachBase.packages[0].contents.behaviors[0].value;
+const teachResponse = teachBehavior.responses[0];
+const firstText = teachResponse.texts[0].variants[0];
+assert.deepEqual(teachResponseTarget(teachBase, teachBehavior.id, firstText, "en-US"), {
+  behaviorId: teachBehavior.id, responseId: teachResponse.id, canReplace: true,
+});
+assert.equal(teachResponseTarget(teachBase, "external.behavior", firstText, "en-US"), null);
+const taughtVariation = teachConversation(teachBase, {
+  action: "variation", input: "hello", answer: "Greetings, traveler!",
+  language: "en-US", behaviorId: teachBehavior.id, responseId: teachResponse.id,
+});
+assert.equal(taughtVariation.packages[0].contents.behaviors[0].value.responses[0].texts[0].variants.at(-1), "Greetings, traveler!");
+assert.equal(teachBase.packages[0].contents.behaviors[0].value.responses[0].texts[0].variants.includes("Greetings, traveler!"), false, "draft operations must not mutate the accepted source");
+assert.throws(() => teachConversation(taughtVariation, {
+  action: "variation", input: "hello", answer: "Greetings, traveler!",
+  language: "en-US", behaviorId: teachBehavior.id, responseId: teachResponse.id,
+}), /already a variant/u);
+const taughtReplacement = teachConversation(teachBase, {
+  action: "replace", input: "hello", answer: "Hello, explorer!",
+  previousReply: firstText, language: "en-US",
+  behaviorId: teachBehavior.id, responseId: teachResponse.id,
+});
+assert.equal(taughtReplacement.packages[0].contents.behaviors[0].value.responses[0].texts[0].variants[0], "Hello, explorer!");
+assert.throws(() => teachConversation(teachBase, {
+  action: "replace", input: "hello", answer: "Hello, explorer!",
+  previousReply: "wrong runtime result", language: "en-US",
+  behaviorId: teachBehavior.id, responseId: teachResponse.id,
+}), /no longer matches/u);
+const taughtTopic = teachConversation(teachBase, {
+  action: "new", input: "Where is the marketplace?", answer: "Across the bridge.",
+  language: "en-US", topic: "village.market",
+});
+const latestMeaning = taughtTopic.packages[0].contents.meanings.at(-1).value;
+const latestBehavior = taughtTopic.packages[0].contents.behaviors.at(-1).value;
+assert.deepEqual(latestMeaning.samples, [{ language: "en-US", text: "Where is the marketplace?" }]);
+assert.equal(latestBehavior.topic, "village.market");
+assert.equal(latestBehavior.activates_topic, true);
+assert.equal(latestBehavior.topic_scoped, false);
+assert.equal(latestBehavior.responses[0].texts[0].variants[0], "Across the bridge.");
+assert.throws(() => teachConversation(teachBase, {
+  action: "new", input: "hi", answer: "hello", language: "zz-ZZ",
+}), /Choose a language/u);
+console.log("PASS Teach mutations are transactional and write canonical localized responses and topics");
+
 console.log("PASS safe behavior deletion blocks dependent bindings/tests and removes an unreferenced pair atomically");
 console.log("PASS safe response deletion preserves at least one response and blocks referenced responses");
 console.log("PASS behavior follow-up, eligibility, repair-candidate, and repeat-threshold fields serialize canonically");

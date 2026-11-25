@@ -485,3 +485,41 @@ button, input, textarea, select { font-weight: 500; }
   .author-number-row .icon-button { justify-self: end; }
 }
 
+
+
+/* Chat-first human authoring: optional detail never competes with the conversation. */
+.teach-page { max-width: 1100px; margin-inline: auto; }
+.teach-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.teach-header h2 { margin-top: 0; }
+.teach-header p { max-width: 680px; }
+.teach-chat { display: flex; flex-direction: column; gap: 18px; }
+.teach-empty { padding: 48px 20px; text-align: center; color: var(--muted, #64748b); }
+.teach-empty strong { display: block; font-size: 1.15rem; color: var(--text, inherit); margin-bottom: 6px; }
+.teach-empty p { max-width: 480px; margin: auto; }
+.teach-transcript { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.teach-exchange { display: flex; flex-direction: column; gap: 10px; }
+.teach-bubble { width: fit-content; max-width: min(92%, 760px); border: 1px solid var(--border, #dbe3ee); border-radius: 16px; padding: 13px 16px; overflow-wrap: anywhere; }
+.teach-bubble > span { display: block; font-size: .73rem; font-weight: 700; opacity: .73; margin-bottom: 6px; }
+.teach-bubble p { margin: 0; white-space: pre-wrap; }
+.teach-bubble.user { align-self: flex-end; background: var(--surface-muted, #eef3f8); }
+.teach-bubble.npc { align-self: flex-start; background: var(--surface, #fff); }
+.teach-feedback { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+.teach-feedback button { white-space: nowrap; }
+.teach-hint { font-size: .78rem; margin-top: 12px !important; opacity: .75; }
+.teach-review { display: flex; flex-direction: column; gap: 13px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border, #dbe3ee); min-width: min(560px, 100%); }
+.teach-review .field { display: flex; flex-direction: column; gap: 6px; }
+.teach-review textarea { width: 100%; min-width: 0; resize: vertical; }
+.teach-advanced { border-top: 1px solid var(--border, #dbe3ee); padding-top: 11px; }
+.teach-advanced summary { cursor: pointer; font-size: .88rem; opacity: .78; }
+.teach-advanced[open] { display: flex; flex-direction: column; gap: 12px; }
+.teach-composer { display: flex; gap: 12px; align-items: flex-end; border-top: 1px solid var(--border, #dbe3ee); padding-top: 18px; }
+.teach-composer .field { flex: 1; min-width: 0; }
+.teach-composer textarea { min-height: 58px; width: 100%; resize: vertical; }
+.teach-composer > button { margin-bottom: 1px; }
+.teach-runtime-options .field { max-width: 620px; }
+@media (max-width: 700px) {
+  .teach-header, .teach-composer { flex-direction: column; align-items: stretch; }
+  .teach-bubble { max-width: 100%; }
+  .teach-review { min-width: 0; }
+  .teach-composer > button { align-self: stretch; }
+}

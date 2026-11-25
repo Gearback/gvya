@@ -102,6 +102,6 @@ export function teachConversation(workspace: StudioBrainWorkspace, request: Teac
   const introducedErrors = auditWorkspace(draft).filter((issue) =>
     issue.severity === "error" && issue.packageId === pkg.manifest.id && authoredIds.includes(issue.objectId)
   );
-  if (introducedErrors.length) throw new Error(introducedErrors.map((issue) => issue.message).join("\n"));
+  if (introducedErrors.length) throw new Error(introducedErrors.map((issue) => `${issue.title}: ${issue.detail}`).join("\n"));
   return touch(draft);
 }

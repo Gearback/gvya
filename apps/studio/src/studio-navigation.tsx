@@ -14,9 +14,9 @@ export interface StudioHistoryLocation {
 }
 
 export const BOT_ROUTES = new Set<StudioRoute>(["bot", "bot-packages", "simulate", "build", "bot-settings"]);
-export const PACKAGE_ROUTES = new Set<StudioRoute>(["package-overview", "author", "capabilities", "source", "assets", "package-simulate", "audit"]);
+export const PACKAGE_ROUTES = new Set<StudioRoute>(["package-overview", "teach", "author", "capabilities", "source", "assets", "package-simulate", "audit"]);
 export const PROJECT_ROUTES = new Set<StudioRoute>(["project", "project-packages"]);
-const ALL_STUDIO_ROUTES = new Set<StudioRoute>(["projects", "packages", "settings", "project", "project-packages", "bot", "bot-packages", "package-overview", "author", "capabilities", "source", "assets", "package-simulate", "audit", "simulate", "build", "bot-settings"]);
+const ALL_STUDIO_ROUTES = new Set<StudioRoute>(["projects", "packages", "settings", "project", "project-packages", "bot", "bot-packages", "package-overview", "teach", "author", "capabilities", "source", "assets", "package-simulate", "audit", "simulate", "build", "bot-settings"]);
 const PACKAGE_NAVIGATION_CONTEXTS = new Set<PackageNavigationContext>(["global", "project", "bot"]);
 const PACKAGE_SCOPES = new Set<"shared" | "project" | "bot">(["shared", "project", "bot"]);
 
@@ -151,11 +151,11 @@ export function Breadcrumb(props: { studio: StudioWorkspace; project: StudioProj
   return <nav className="breadcrumb" aria-label="Breadcrumb">{segments.map((segment, index) => <span className="breadcrumb-segment" key={`${segment.label}:${index}`}>{index > 0 && <span className="breadcrumb-separator">›</span>}{segment.icon && <span className="breadcrumb-icon" aria-hidden="true">{segment.icon}</span>}{segment.onClick ? <button onClick={segment.onClick}>{segment.label}</button> : <strong>{segment.label}</strong>}</span>)}{provenance && <span className="breadcrumb-provenance">{provenance}</span>}</nav>;
 }
 
-export function ContextTabs(props: { kind: "bot" | "package"; route: StudioRoute; setRoute: (route: StudioRoute) => void; overviewOnly?: boolean }) {
+export function ContextTabs(props: { kind: "bot" | "package"; route: StudioRoute; setRoute: (route: StudioRoute) => void; overviewOnly?: boolean; packageKind?: PackageKind }) {
   const rows: Array<[StudioRoute, string]> = props.overviewOnly
     ? [[props.kind === "bot" ? "bot" : "package-overview", "Overview"]]
     : props.kind === "bot"
     ? [["bot","Overview"],["bot-packages","Packages"],["simulate","Simulate"],["bot-settings","Settings"],["build","Build"]]
-    : [["package-overview","Overview"],["author","Behaviors"],["capabilities","Capabilities"],["source","Source"],["assets","Assets"],["package-simulate","Simulate"],["audit","Audit"]];
+    : [["package-overview","Overview"],...(props.packageKind === "fallback" ? [] as Array<[StudioRoute, string]> : [["teach","Teach"] as [StudioRoute, string]]),["author","Behaviors"],["capabilities","Capabilities"],["source","Source"],["assets","Assets"],["package-simulate","Simulate"],["audit","Audit"]];
   return <nav className="context-tabs" aria-label={`${props.kind} sections`}>{rows.map(([nextRoute,label]) => <button className={props.route === nextRoute ? "active" : ""} key={nextRoute} onClick={() => props.setRoute(nextRoute)}>{label}</button>)}</nav>;
 }
